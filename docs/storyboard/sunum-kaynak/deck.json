@@ -1,0 +1,33 @@
+{
+  "v": 4,
+  "createdOnFiles": { "v": 1, "at": "2026-10-11T14:35:00Z" },
+  "lists": "css",
+  "title": "Kale Creators — Tanıtım Videosu Storyboard ve Lansman Planı",
+  "order": [
+    "kapak",
+    "mesaj",
+    "yapi",
+    "sb1",
+    "sb2",
+    "sb3",
+    "sb4",
+    "metin",
+    "cekim",
+    "kurgu",
+    "takvim",
+    "kanallar",
+    "gorevler",
+    "hedefler"
+  ],
+  "sections": {
+    "s1": { "description": "Videonun amacı, tek mesaj ve yapısı", "start": "kapak" },
+    "s2": { "description": "12 karelik storyboard, replikler ve çekim notları", "start": "sb1" },
+    "s3": { "description": "Çekim listesi ve kurgu teslimatları", "start": "cekim" },
+    "s4": { "description": "İki haftalık lansman planı, kanal rolleri, görevler ve hedefler", "start": "takvim" }
+  },
+  "faces": {
+    "poppins": { "family": "Poppins", "href": "https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" },
+    "instrument-serif": { "family": "Instrument Serif", "href": "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" }
+  },
+  "designSystems": []
+}
