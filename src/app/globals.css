@@ -325,7 +325,7 @@ details > summary::-webkit-details-marker { display: none; }
 
 /* Marka şeridi */
 @keyframes marka-kayan { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-50%, 0, 0); } }
-.marka-kayan { display: flex; width: max-content; align-items: center; animation: marka-kayan 70s linear infinite; }
+.marka-kayan { display: flex; width: max-content; align-items: center; animation: marka-kayan 45s linear infinite; }
 .marka-kayan:hover { animation-play-state: paused; }
 .marka-logo {
   filter: brightness(0) invert(1);
