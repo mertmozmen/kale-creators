@@ -10,24 +10,30 @@ import type { Ayarlar } from "@/lib/types";
 
 export default function AyarlarSayfasi() {
   const { ayarlar } = useStore();
+  const [kaydedildi, setKaydedildi] = useState(false);
   return (
     <YonetimKabuk baslik="Ayarlar">
-      {/* key: mağaza değişince (kaydet / demoya dön) taslak yeniden kurulur */}
-      <AyarlarFormu key={JSON.stringify(ayarlar)} />
+      {/* key: mağaza değişince (kaydet / demoya dön) taslak yeniden kurulur; "Kaydedildi" mesajı üstte tutulur ki remount'ta kaybolmasın */}
+      <AyarlarFormu
+        key={JSON.stringify(ayarlar)}
+        kaydedildi={kaydedildi}
+        onKaydet={() => {
+          setKaydedildi(true);
+          setTimeout(() => setKaydedildi(false), 2200);
+        }}
+      />
     </YonetimKabuk>
   );
 }
 
-function AyarlarFormu() {
+function AyarlarFormu({ kaydedildi, onKaydet }: { kaydedildi: boolean; onKaydet: () => void }) {
   const { ayarlar, ayarlarGuncelle, basvurular, demoyuSifirla, bulut, yenile } = useStore();
   const [taslak, setTaslak] = useState<Ayarlar>(ayarlar);
-  const [kaydedildi, setKaydedildi] = useState(false);
 
   const kaydet = (e: React.FormEvent) => {
     e.preventDefault();
     ayarlarGuncelle(taslak);
-    setKaydedildi(true);
-    setTimeout(() => setKaydedildi(false), 1800);
+    onKaydet();
   };
 
   const indir = () => {
