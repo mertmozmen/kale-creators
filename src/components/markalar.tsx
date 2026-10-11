@@ -17,7 +17,7 @@ export function MarkaSeridi() {
                 alt={m.ad}
                 loading="lazy"
                 decoding="async"
-                className={`marka-logo h-8 w-auto max-w-[150px] object-contain sm:h-10 sm:max-w-[170px] ${m.mono === false ? "marka-renkli" : ""} ${m.hoverRenk === false ? "marka-sabit" : ""}`}
+                className={`marka-logo w-auto object-contain ${m.kare ? "h-12 max-w-[64px] sm:h-14 sm:max-w-[72px]" : "h-8 max-w-[150px] sm:h-10 sm:max-w-[170px]"} ${m.mono === false ? "marka-renkli" : ""} ${m.hoverRenk === false ? "marka-sabit" : ""}`}
               />
             );
             return (
