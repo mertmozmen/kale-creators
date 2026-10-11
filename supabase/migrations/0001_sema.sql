@@ -124,7 +124,7 @@ begin
     url := url,
     body := jsonb_build_object('tur', tur, 'basvuru', to_jsonb(new)),
     headers := jsonb_build_object('Content-Type', 'application/json', 'x-webhook-secret', gizli),
-    timeout_milliseconds := 8000
+    timeout_milliseconds := 30000
   );
   return new;
 end $$;
