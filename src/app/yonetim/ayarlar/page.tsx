@@ -19,7 +19,7 @@ export default function AyarlarSayfasi() {
 }
 
 function AyarlarFormu() {
-  const { ayarlar, ayarlarGuncelle, basvurular, demoyuSifirla } = useStore();
+  const { ayarlar, ayarlarGuncelle, basvurular, demoyuSifirla, bulut, yenile } = useStore();
   const [taslak, setTaslak] = useState<Ayarlar>(ayarlar);
   const [kaydedildi, setKaydedildi] = useState(false);
 
@@ -79,11 +79,13 @@ function AyarlarFormu() {
             </div>
           </Kart>
 
-          <Kart baslik="Yönetici şifresi">
-            <Alan etiket="Şifre" yardim="Demo sürümünde tarayıcıda saklanır. Supabase'e geçince gerçek hesaplara dönüşür.">
-              <input className="alan" value={taslak.yoneticiSifre} onChange={(e) => setTaslak({ ...taslak, yoneticiSifre: e.target.value })} />
-            </Alan>
-          </Kart>
+          {!bulut && (
+            <Kart baslik="Yönetici şifresi">
+              <Alan etiket="Şifre" yardim="Demo sürümünde tarayıcıda saklanır. Canlı sitede giriş Supabase hesaplarıyla yapılır.">
+                <input className="alan" value={taslak.yoneticiSifre} onChange={(e) => setTaslak({ ...taslak, yoneticiSifre: e.target.value })} />
+              </Alan>
+            </Kart>
+          )}
 
           <div className="flex items-center gap-3">
             <Buton varyant="ink" type="submit">
@@ -95,22 +97,40 @@ function AyarlarFormu() {
 
         <div className="space-y-6">
           <Kart baslik="Veri">
-            <p className="text-sm text-ink/65">Bu demo tüm veriyi tarayıcıda tutar. Yedek almak için JSON indir.</p>
+            <p className="text-sm text-ink/65">
+              {bulut
+                ? "Başvurular Supabase veritabanında (proje: kalecreators). Yedek için JSON indirebilirsin."
+                : "Bu demo tüm veriyi tarayıcıda tutar. Yedek almak için JSON indir."}
+            </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Buton varyant="ghost-dark" boyut="sm" onClick={indir}>
                 <Ikon ad="indir" boyut={16} /> Başvuruları indir ({basvurular.length})
               </Buton>
-              <Buton
-                varyant="ghost-dark"
-                boyut="sm"
-                onClick={() => {
-                  if (confirm("Tüm başvurular ve ayarlar demo verisine dönsün mü?")) demoyuSifirla();
-                }}
-              >
-                <Ikon ad="yenile" boyut={16} /> Demo verisine dön
-              </Buton>
+              {bulut ? (
+                <Buton varyant="ghost-dark" boyut="sm" onClick={() => void yenile()}>
+                  <Ikon ad="yenile" boyut={16} /> Listeyi yenile
+                </Buton>
+              ) : (
+                <Buton
+                  varyant="ghost-dark"
+                  boyut="sm"
+                  onClick={() => {
+                    if (confirm("Tüm başvurular ve ayarlar demo verisine dönsün mü?")) demoyuSifirla();
+                  }}
+                >
+                  <Ikon ad="yenile" boyut={16} /> Demo verisine dön
+                </Buton>
+              )}
             </div>
           </Kart>
+          {bulut && (
+            <Kart baslik="E-posta otomasyonu">
+              <p className="text-sm text-ink/65">
+                bilgi@kalecreators.com üzerinden otomatik gider: başvuru alındı (adaya + ekibe bildirim), görüşme daveti, kabul, olumsuz. Durumu
+                değiştirdiğinde ilgili e-posta kendiliğinden yollanır.
+              </p>
+            </Kart>
+          )}
           <Kart baslik="Açık kararlar">
             <p className="text-sm text-ink/65">Strateji belgesinde (11 Ekim 2026) karara bağlanmamış başlıklar:</p>
             <ul className="mt-3 space-y-2 text-sm">

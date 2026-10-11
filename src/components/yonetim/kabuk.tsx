@@ -15,10 +15,12 @@ const MENU = [
 
 /** Yönetim paneli kabuğu: şifre kapısı + üst menü */
 export function YonetimKabuk({ children, baslik }: { children: React.ReactNode; baslik?: string }) {
-  const { hazir, yonetici, girisYap, cikisYap } = useStore();
+  const { hazir, yonetici, girisYap, cikisYap, bulut, yoneticiEposta, hata: storeHata, hatayiTemizle } = useStore();
   const yol = usePathname();
+  const [eposta, setEposta] = useState("");
   const [sifre, setSifre] = useState("");
   const [hata, setHata] = useState(false);
+  const [bekliyor, setBekliyor] = useState(false);
 
   if (!hazir) return <div className="min-h-screen bg-paper" />;
 
@@ -26,16 +28,35 @@ export function YonetimKabuk({ children, baslik }: { children: React.ReactNode; 
     return (
       <main className="koyu-parilti flex min-h-screen items-center justify-center bg-ink px-4">
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
-            if (!girisYap(sifre)) setHata(true);
+            setBekliyor(true);
+            const ok = await girisYap(sifre, eposta);
+            setBekliyor(false);
+            if (!ok) setHata(true);
           }}
           className="w-full max-w-sm rounded-3xl bg-white p-8 text-ink"
         >
           <Logo />
-          <h1 className="font-display mt-6 text-2xl font-bold">Yönetim paneli</h1>
+          <h1 className="font-display mt-6 text-2xl font-semibold">Yönetim paneli</h1>
           <p className="mt-1 text-sm text-ink/60">Değerlendirme kurulu girişi.</p>
-          <label className="mt-6 block">
+          {bulut && (
+            <label className="mt-6 block">
+              <span className="mb-1.5 block text-sm font-semibold">E-posta</span>
+              <input
+                type="email"
+                className="alan"
+                value={eposta}
+                onChange={(e) => {
+                  setEposta(e.target.value);
+                  setHata(false);
+                }}
+                autoComplete="username"
+                autoFocus
+              />
+            </label>
+          )}
+          <label className={`${bulut ? "mt-4" : "mt-6"} block`}>
             <span className="mb-1.5 block text-sm font-semibold">Şifre</span>
             <input
               type="password"
@@ -45,14 +66,15 @@ export function YonetimKabuk({ children, baslik }: { children: React.ReactNode; 
                 setSifre(e.target.value);
                 setHata(false);
               }}
-              autoFocus
+              autoComplete="current-password"
+              autoFocus={!bulut}
             />
           </label>
-          {hata && <p className="mt-2 text-sm font-medium text-rose-ink">Şifre yanlış.</p>}
-          <Buton varyant="ink" className="mt-5 w-full" type="submit">
-            <Ikon ad="kilit" boyut={18} /> Giriş yap
+          {hata && <p className="mt-2 text-sm font-medium text-rose-ink">{bulut ? "E-posta veya şifre yanlış ya da bu hesap yönetici değil." : "Şifre yanlış."}</p>}
+          <Buton varyant="ink" className="mt-5 w-full" type="submit" disabled={bekliyor}>
+            <Ikon ad="kilit" boyut={18} /> {bekliyor ? "Giriş yapılıyor…" : "Giriş yap"}
           </Buton>
-          <p className="mt-4 text-center text-xs text-muted">Demo şifresi: kale2026 · Ayarlar&apos;dan değiştirilir.</p>
+          {!bulut && <p className="mt-4 text-center text-xs text-muted">Demo şifresi: kale2026 · Ayarlar&apos;dan değiştirilir.</p>}
           <Link href="/" className="mt-4 block text-center text-xs font-medium text-ink/50 hover:text-ink">
             ← Siteye dön
           </Link>
@@ -78,6 +100,7 @@ export function YonetimKabuk({ children, baslik }: { children: React.ReactNode; 
             </nav>
           </div>
           <div className="flex items-center gap-2">
+            {yoneticiEposta && <span className="hidden text-xs text-muted md:block">{yoneticiEposta}</span>}
             <Link href="/" className="hidden text-sm font-medium text-ink/60 hover:text-ink sm:block">
               Siteyi gör
             </Link>
@@ -95,7 +118,13 @@ export function YonetimKabuk({ children, baslik }: { children: React.ReactNode; 
         </nav>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
-        {baslik && <h1 className="font-display mb-6 text-3xl font-bold">{baslik}</h1>}
+        {storeHata && (
+          <div className="mb-5 flex items-start justify-between gap-4 rounded-2xl border border-rose-ink/20 bg-rose p-4 text-sm text-rose-ink">
+            <span>Sunucu hatası: {storeHata}</span>
+            <button onClick={hatayiTemizle} className="shrink-0 font-semibold underline-offset-2 hover:underline">Kapat</button>
+          </div>
+        )}
+        {baslik && <h1 className="font-display mb-6 text-3xl font-semibold">{baslik}</h1>}
         {children}
       </main>
     </div>

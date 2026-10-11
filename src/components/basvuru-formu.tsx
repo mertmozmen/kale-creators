@@ -33,6 +33,8 @@ export function BasvuruFormu() {
   const [kvkk, setKvkk] = useState(false);
   const [hatalar, setHatalar] = useState<Record<string, string>>({});
   const [gonderildi, setGonderildi] = useState<string | null>(null);
+  const [gonderiliyor, setGonderiliyor] = useState(false);
+  const [gonderimHatasi, setGonderimHatasi] = useState<string | null>(null);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -83,8 +85,10 @@ export function BasvuruFormu() {
     setAdim((a) => Math.max(a - 1, 0));
   };
 
-  const gonder = () => {
+  const gonder = async () => {
     if (!dogrula() || !profil || !kisisel.konum) return;
+    setGonderimHatasi(null);
+    setGonderiliyor(true);
     const b: YeniBasvuru = {
       profil,
       ad: kisisel.ad.trim(),
@@ -101,8 +105,14 @@ export function BasvuruFormu() {
       kvkkOnay: true,
       ilkelerOnay: true,
     };
-    const kayit = basvuruEkle(b);
-    setGonderildi(kayit.id);
+    try {
+      const kayit = await basvuruEkle(b);
+      setGonderildi(kayit.id);
+    } catch (e) {
+      setGonderimHatasi(e instanceof Error ? e.message : "Gönderilemedi. Bağlantını kontrol edip tekrar dene.");
+    } finally {
+      setGonderiliyor(false);
+    }
   };
 
   if (!hazir) return <div className="h-72 animate-pulse rounded-3xl bg-white/60" />;
@@ -135,7 +145,7 @@ export function BasvuruFormu() {
         <dl className="mt-8 grid gap-4 rounded-2xl bg-paper p-5 text-sm sm:grid-cols-3">
           <div>
             <dt className="text-xs font-semibold uppercase tracking-wider text-muted">Başvuru no</dt>
-            <dd className="mt-1 font-mono font-semibold">{gonderildi.toUpperCase()}</dd>
+            <dd className="mt-1 font-mono font-semibold">{gonderildi.slice(0, 8).toUpperCase()}</dd>
           </div>
           <div>
             <dt className="text-xs font-semibold uppercase tracking-wider text-muted">Profil</dt>
@@ -337,11 +347,12 @@ export function BasvuruFormu() {
             Devam
           </Buton>
         ) : (
-          <Buton onClick={gonder} ok>
-            Başvuruyu gönder
+          <Buton onClick={gonder} ok disabled={gonderiliyor}>
+            {gonderiliyor ? "Gönderiliyor…" : "Başvuruyu gönder"}
           </Buton>
         )}
       </div>
+      {gonderimHatasi && <p className="mt-3 text-right text-sm font-medium text-rose-ink">Hata: {gonderimHatasi}</p>}
     </div>
   );
 }

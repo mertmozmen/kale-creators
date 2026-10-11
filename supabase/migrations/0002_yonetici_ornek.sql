@@ -1,0 +1,14 @@
+-- Yönetici kullanıcı ekleme ŞABLONU (gerçek değerler uygulanırken doldurulur, bu dosya commit'lenir ama şifre içermez)
+-- 1) auth.users'a e-posta/şifre ile kullanıcı ekle (e-posta onaylı)
+-- 2) yoneticiler tablosuna yaz
+--
+-- insert into auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at)
+-- values ('00000000-0000-0000-0000-000000000000', gen_random_uuid(), 'authenticated', 'authenticated',
+--         'bilgi@kalecreators.com', crypt('<ŞİFRE>', gen_salt('bf')), now(),
+--         '{"provider":"email","providers":["email"]}', '{"ad":"Kale Creators Yönetim"}', now(), now());
+-- insert into public.yoneticiler (user_id, ad) select id, 'Kale Creators Yönetim' from auth.users where email = 'bilgi@kalecreators.com';
+--
+-- Gizli ayarlar (Edge Function dağıtıldıktan sonra):
+-- insert into public.gizli_ayarlar (anahtar, deger) values
+--   ('webhook_secret', '<rastgele 32+ karakter>'),
+--   ('mail_fonksiyon_url', 'https://<proje-ref>.supabase.co/functions/v1/basvuru-mail');
